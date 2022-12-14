@@ -27,3 +27,14 @@ class TritonEndPoint:
                                             inputs=[query],
                                             outputs=[self.model_score])
         return response.as_numpy("output")
+
+    def qa(self, question, context):
+        question = tritonclient.http.InferInput(name="QUESTION", shape=(1,), datatype="BYTES")
+        question.set_data_from_numpy(np.asarray([question], dtype=object))
+        context = tritonclient.http.InferInput(name="CONTEXT", shape=(1,), datatype="BYTES")
+        context.set_data_from_numpy(np.asarray([context], dtype=object))
+        response = self.triton_client.infer(model_name=self.model_name,
+                                            model_version=self.model_version,
+                                            inputs=[question, context],
+                                            outputs=[self.model_score])
+        return response.as_numpy("output")
